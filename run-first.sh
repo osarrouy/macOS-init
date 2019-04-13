@@ -28,17 +28,13 @@ echo 'export PATH="/usr/local/sbin:$PATH"' >> ~/.zshrc
 # Mettre à jour la liste des applications disponibles
 brew update
 
-# Installer Dropbox au plus tôt pour lancer la synchro des settings
-brew cask install dropbox
-echo "Ouverture de Dropbox pour commencer la synchronisation"
-open -a Dropbox
-
 # Installer les nouvelles applications du bundle Brewfile
 # et mettre à jour celles déjà présentes
 brew bundle
 
-# Installer version 6 de screenflow (plutôt que la dernière, dont je n'ai pas la license)
-brew cask install https://raw.githubusercontent.com/colindunn/homebrew-cask/9236cc83c732310b6308971d5d376369f5f78cf8/Casks/screenflow.rb
+# Installer SF-Mono
+echo 'Installation de SF-Mono'
+cd /Applications/Utilities/Terminal.app/Contents/Resources/Fonts/ && cp *.otf ~/Library/Fonts/ && cd
 
 echo "Installation des outils de développement Ruby"
 # Mise à jour de RubyGems
@@ -49,16 +45,8 @@ sudo gem install bundler -n /usr/local/bin
 echo "Installation des outils de développement Node"
 # Installation de composants Node
 npm install -g npm-check-updates
-# npm install -g grunt
-# npm install -g grunt-cli
 
-echo "Installation d'applications en Node"
-# De meilleures aides en ligne : http://tldr.sh/
-npm install -g tldr
-
-echo "Finalisation de l'installation de Apache et PHP"
-brew services start httpd
-brew services start php
+echo "Installation d'applications Node"
 
 ## ************************* CONFIGURATION ********************************
 echo "Configuration de quelques paramètres par défaut"
@@ -84,7 +72,7 @@ defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
 # Afficher le chemin d'accès
 defaults write com.apple.finder ShowPathbar -bool true
 
-# Affichage de toutes les extensions
+# Afficher toutes les extensions
 sudo defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
 # Afficher le dossier maison par défaut
@@ -94,7 +82,7 @@ defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 # Supprimer les doublons dans le menu "ouvrir avec…"
 /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
 
-# Recherche dans le dossier en cours par défaut
+# Rechercher dans le dossier en cours par défaut
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
 # Fenêtre de sauvegarde complète par défaut
@@ -122,13 +110,13 @@ defaults write com.apple.LaunchServices LSQuarantine -bool false
 ## DOCK
 
 # Taille minimum
-defaults write com.apple.dock tilesize -int 32
+defaults write com.apple.dock tilesize -int 64
 
 # Agrandissement actif
 defaults write com.apple.dock magnification -bool true
 
 # Taille maximale pour l'agrandissement
-defaults write com.apple.dock largesize -float 128
+defaults write com.apple.dock largesize -float 96
 
 ## MISSION CONTROL
 
@@ -139,36 +127,18 @@ defaults write com.apple.dock mru-spaces -bool false
 defaults write com.apple.screensaver askForPassword -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 0
 
-## COINS ACTIFS
-
-#  0: no-op
-#  2: Mission Control
-#  3: Show application windows
-#  4: Desktop
-#  5: Start screen saver
-#  6: Disable screen saver
-#  7: Dashboard
-# 10: Put display to sleep
-# 11: Launchpad
-# 12: Notification Center
-
-# En haut à gauche : bureau
-# defaults write com.apple.dock wvous-tl-corner -int 4
-# defaults write com.apple.dock wvous-tl-modifier -int 0
-
-# En haut à droite : screensaver
-defaults write com.apple.dock wvous-tr-corner -int 5
-defaults write com.apple.dock wvous-tr-modifier -int 0
-
-# En bas à gauche : fenêtres de l'application
-# defaults write com.apple.dock wvous-bl-corner -int 3
-# defaults write com.apple.dock wvous-bl-modifier -int 0
-
-# En bas à droite : Mission Control
-# defaults write com.apple.dock wvous-br-corner -int 2
-# defaults write com.apple.dock wvous-br-modifier -int 0
-
 ## CLAVIER ET TRACKPAD
+
+## Activer Trackpad: enable tap to click for this user and for the login screen"
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+## echo " Trackpad: map bottom right corner to right-click"
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.trackpadCornerClickBehavior -int 1
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
 
 # Accès au clavier complet (tabulation dans les boîtes de dialogue)
 sudo defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
@@ -196,16 +166,6 @@ defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
 # Vérifier les mises à jour automatiquement
 sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
 
-# Safari : menu développeur / URL en bas à gauche / URL complète en haut / Do Not Track / affichage barre favoris
-defaults write com.apple.safari IncludeDevelopMenu -int 1
-defaults write com.apple.safari ShowOverlayStatusBar -int 1
-defaults write com.apple.safari ShowFullURLInSmartSearchField -int 1
-defaults write com.apple.safari SendDoNotTrackHTTPHeader -int 1
-defaults write com.apple.Safari ShowFavoritesBar -bool true
-
-# Chrome : désactiver la navigation dans l'historique au swipe
-defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool FALSE
-
 # Photos : pas d'affichage pour les iPhone
 defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool YES
 
@@ -216,8 +176,6 @@ defaults write com.apple.TextEdit RichText -int 0
 defaults write com.apple.TextEdit PlainTextEncoding -int 4
 defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
 
-## iTerm2 : ne pas afficher d'alerte à la fermeture
-defaults write com.googlecode.iterm2 PromptOnQuit -bool false
 
 ## SONS
 
