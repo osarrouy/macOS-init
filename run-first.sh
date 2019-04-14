@@ -8,14 +8,13 @@
 # https://www.macg.co/logiciels/2017/02/comment-synchroniser-les-preferences-des-apps-avec-mackup-97442
 # https://github.com/OzzyCzech/dotfiles/blob/master/.osx
 
-# Demande du mot de passe administrateur dès le départ
+# Ask administrative password
 sudo -v
 
-# Keep-alive: met à jour le timestamp de `sudo`
-# tant que `post-install.sh` n'est pas terminé
+# Keep-alive: update `sudo` timestamp as long as script is running
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-## LA BASE : Homebrew et les lignes de commande
+# Homebrew
 if test ! $(which brew)
 then
   echo "Installation de Homebrew"
@@ -47,6 +46,8 @@ echo "Installation des outils de développement Node"
 npm install -g npm-check-updates
 
 echo "Installation d'applications Node"
+npm install -g truffle
+
 
 ## ************************* CONFIGURATION ********************************
 echo "Configuration de quelques paramètres par défaut"
@@ -104,8 +105,6 @@ defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
-# Supprimer l'alerte de quarantaine des applications
-defaults write com.apple.LaunchServices LSQuarantine -bool false
 
 ## DOCK
 
@@ -129,10 +128,7 @@ defaults write com.apple.screensaver askForPasswordDelay -int 0
 
 ## CLAVIER ET TRACKPAD
 
-## Activer Trackpad: enable tap to click for this user and for the login screen"
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
-defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
-defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
 
 ## echo " Trackpad: map bottom right corner to right-click"
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
@@ -190,8 +186,6 @@ sudo defaults write com.apple.systemsound com.apple.sound.beep.volume -float 1
 # Enregistrer les screenshots en PNG (autres options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"
 
-# Mettre une ombre sur les screenshots
-defaults write com.apple.screencapture disable-shadow -bool false
 
 ## ************ Fin de l'installation *********
 echo "Finder et Dock relancés… redémarrage nécessaire pour terminer."
